@@ -8,7 +8,7 @@ export async function chatStream(question: string, messageList: Message[]) {
     },
     body: JSON.stringify({
       question,
-      history: messageList.map((item) => item.message),
+      history: messageList,
     }),
   });
 }

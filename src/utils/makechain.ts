@@ -6,6 +6,11 @@ import { CallbackManager } from "langchain/callbacks";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { supabase_client } from "../../config";
 import { loadEnvConfig } from "@next/env";
+import { BufferMemory, ChatMessageHistory } from "langchain/memory";
+import { AIChatMessage, HumanChatMessage } from "langchain/schema";
+
+import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
+import { dbConfig } from "@/helpers/config";
 
 loadEnvConfig("");
 
@@ -22,19 +27,41 @@ export const makeChain = async (
     // verbose: true,
   });
 
-  const retriever: SupabaseHybridSearch = getReteiever(embeddings);
+  // const retriever: SupabaseHybridSearch = getReteiever(embeddings);
+
+  const vectorStore = await SupabaseVectorStore.fromExistingIndex(
+    embeddings,
+    dbConfig
+  );
 
   const llm: ChatOpenAI = new ChatOpenAI({
     temperature: 0.42,
     streaming: true,
     modelName: "gpt-3.5-turbo",
     callbackManager: llmCallback(writer, encoder),
-    verbose: true,
-    cache: true,
+    // verbose: true,
   });
 
+  console.log({ history });
+
+  const chatHistory = new ChatMessageHistory(
+    (history.length > 3
+      ? history.slice(history.length - 3, history.length) || []
+      : history || []
+    ).map((item) => {
+      if (item.type === "apiMessage") {
+        return new AIChatMessage(item.message);
+      } else {
+        return new HumanChatMessage(item.message);
+      }
+    })
+  );
+
   const chain: ConversationalRetrievalQAChain =
-    ConversationalRetrievalQAChain.fromLLM(llm, retriever, {
+    ConversationalRetrievalQAChain.fromLLM(llm, vectorStore.asRetriever(10), {
+      // memory: new BufferMemory({
+      //   memoryKey
+      // }),
       qaTemplate: getQATemplate(),
       questionGeneratorTemplate: generateQuestion(),
       returnSourceDocuments: true,
@@ -48,10 +75,7 @@ export const makeChain = async (
 
   chain.call({
     question,
-    chat_history:
-      history.length > 3
-        ? history.slice(history.length - 3, history.length) || []
-        : history || [],
+    chat_history: chatHistory,
   });
 
   return stream;

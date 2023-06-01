@@ -2,17 +2,14 @@ const fs = require("fs");
 const path = require("path");
 const cheerio = require("cheerio");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
-const { OpenAIEmbeddings } = require("langchain/embeddings");
+const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 
 const { SupabaseVectorStore } = require("langchain/vectorstores/supabase");
+
 
 const {
   CheerioWebBaseLoader,
 } = require("langchain/document_loaders/web/cheerio");
-
-
-const { loadEnvConfig } = require("@next/env");
-loadEnvConfig("");
 
 const { dbConfig } = require("../config");
 
@@ -35,8 +32,8 @@ async function saveSitemapHtml() {
     });
 
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 1500,
-      chunkOverlap: 500,
+      chunkSize: 1000,
+      chunkOverlap: 200,
     });
 
     for (const url of urls) {
@@ -46,15 +43,22 @@ async function saveSitemapHtml() {
         selector: "main",
       });
 
-      loader.scrape
+
+      let docs = await loader.load();
+
+      docs = docs.map((doc) => {
+        doc.pageContent = doc.pageContent.replace(/[\r\n\t]+/g, ' ').replace(/\s+/g, ' ').trim();
+        return doc;
+      })
 
 
 
-      const docs = await loader.loadAndSplit(textSplitter);
+      const chunkedDocs = await textSplitter.splitDocuments(docs);
 
+      // console.log({ chunkedDocs });
 
       await SupabaseVectorStore.fromDocuments(
-        docs,
+        chunkedDocs,
         embeddings,
         dbConfig
       );

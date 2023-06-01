@@ -40,7 +40,7 @@ function MessageList(props: MessageListProps) {
             <div className={`flex items-start w-full `}>
               {message.type === "apiMessage" ? (
                 <Image
-                  src="/logo-mini.png"
+                  src="/logo-min.png"
                   alt="AI"
                   width={24}
                   height={24}

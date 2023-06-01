@@ -19,9 +19,6 @@ type ChatBoxProps = {
   className: string;
 };
 function MessageBox(props: ChatBoxProps) {
-  const { id: chatId } = useParams();
-
-  const router = useRouter();
   const { className } = props;
   const textAreaRef = useRef<HTMLInputElement>(null);
 
@@ -54,6 +51,8 @@ function MessageBox(props: ChatBoxProps) {
 
     try {
       const streamIndex = messageList.length + 1;
+
+      console.log({ messageList });
 
       const response = await chatStream(currentQuery, messageList);
 
@@ -93,6 +92,7 @@ function MessageBox(props: ChatBoxProps) {
         }
       }
     } catch (error) {
+      console.log("error occured");
       setLoadingState(LoadingStateMap.idle);
       toast({
         variant: "destructive",
