@@ -33,7 +33,7 @@ function MessageList(props: MessageListProps) {
               message.type === "apiMessage" &&
               index === messageList.length - 1 &&
               streaming
-                ? "border-orange-400 blinking"
+                ? "border-emerald-400 blinking"
                 : "border-transparent"
             }`}
           >
@@ -84,7 +84,7 @@ function MessageList(props: MessageListProps) {
                           <a
                             target="_blank"
                             key={"sourcedacs_" + dindex}
-                            className="text-primary hover:text-orange-600 hover:underline no-underline max-w-[200px] py-1  overflow-hidden truncate"
+                            className="text-primary hover:text-emerald-600 hover:underline no-underline max-w-[200px] py-1  overflow-hidden truncate"
                             href={doc}
                           >
                             {dindex + 1}. {doc}

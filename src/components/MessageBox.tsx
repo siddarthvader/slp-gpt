@@ -115,12 +115,12 @@ function MessageBox(props: ChatBoxProps) {
 
   return (
     <div
-      className={`flex items-center space-x-0 border-2 border-secondary w-[80%]  divide-x-2 p-2 relative 
+      className={`flex items-center space-x-0 border-2 border-secondary w-full  divide-x-2 p-2 relative 
  ${className}`}
     >
       <input
         ref={textAreaRef}
-        className="p-2 outline-none w-[90%] flex h-full "
+        className="flex w-full h-full p-2 outline-none"
         type="text"
         placeholder={"Ask a question..."}
         value={currentQuery}
@@ -128,11 +128,11 @@ function MessageBox(props: ChatBoxProps) {
         onKeyDown={handleEnter}
       />
       {isLoading(loadingState) || isStreaming(loadingState) ? (
-        <Button disabled type="button" className="bg-orange-600 ">
+        <Button disabled type="button" className="bg-emerald-600 ">
           <LoaderIcon className="inline mr-2 text-white animate-spin" />
         </Button>
       ) : (
-        <Button className="bg-orange-600" onClick={handleAnswer}>
+        <Button className="bg-emerald-600" onClick={handleAnswer}>
           <Send className="inline w-4 h-4 mr-2 text-white" />
         </Button>
       )}
