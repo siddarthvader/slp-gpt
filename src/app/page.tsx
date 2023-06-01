@@ -1,9 +1,21 @@
-import Image from "next/image";
+"use client";
+
+import MessageList from "../components/MessageList";
+import { useLoadingStore, useMessageStore } from "@/store";
+import { isStreaming } from "@/helpers/util";
+import MessageBox from "@/components/MessageBox";
 
 export default function Home() {
+  const loadingState = useLoadingStore((state) => state.loadingState);
+  const messageList = useMessageStore((state) => state.messages);
+
   return (
-    <main className="flex flex-col items-center justify-between min-h-screen p-24">
-      SLP GPT
-    </main>
+    <div className="w-[78%] h-full flex flex-col mx-3 pt-3 center">
+      <MessageList
+        streaming={isStreaming(loadingState)}
+        messageList={messageList}
+      />
+      <MessageBox className="w-full" />
+    </div>
   );
 }
