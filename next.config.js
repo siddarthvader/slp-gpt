@@ -1,4 +1,18 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+    webpack(config) {
+        config.experiments = {
+            asyncWebAssembly: true,
+            layers: true,
+        };
 
-module.exports = nextConfig
+        return config;
+    },
+    staticPageGenerationTimeout: 1000 * 60 * 5,
+    reactStrictMode: true,
+    typescript: {
+        ignoreBuildErrors: true,
+    },
+};
+
+module.exports = nextConfig;
