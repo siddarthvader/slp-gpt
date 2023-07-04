@@ -14,8 +14,12 @@ export const copyFunction = (copyText: string) => {
 
 export function isValidJSON(str: string) {
   try {
-    JSON.parse(str);
-    return true;
+    const parsedJSON = JSON.parse(str);
+    return (
+      typeof parsedJSON === "object" &&
+      parsedJSON !== null &&
+      !Array.isArray(parsedJSON)
+    );
   } catch (error) {
     return false;
   }
