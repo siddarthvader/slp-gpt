@@ -62,35 +62,45 @@ function MessageBox(props: ChatBoxProps) {
       if (!response?.body) {
         throw new Error("Response has no body.");
       }
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      setLoadingState(LoadingStateMap.streaming);
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-        const chunk = decoder.decode(value);
+      const { processed_value, metadata } = await response.json();
+      setMessage(
+        {
+          type: "apiMessage",
+          message: processed_value,
+        },
+        streamIndex
+      );
 
-        const isJSON = isValidJSON(chunk);
+      // const reader = response.body.getReader();
+      // const decoder = new TextDecoder();
+      // setLoadingState(LoadingStateMap.streaming);
 
-        if (isJSON) {
-          const parsedValue = JSON.parse(chunk) as DecodedChatStream;
+      // while (true) {
+      //   const { done, value } = await reader.read();
+      //   if (done) {
+      //     break;
+      //   }
+      //   const chunk = decoder.decode(value);
 
-          setSourceMetadata(parsedValue.metadata, streamIndex);
-        } else {
-          setMessage(
-            {
-              type: "apiMessage",
-              message:
-                (useMessageStore.getState().messages[streamIndex]?.message ??
-                  "") + chunk,
-            },
-            streamIndex
-          );
-        }
-      }
+      //   const isJSON = isValidJSON(chunk);
+
+      //   if (isJSON) {
+      //     const parsedValue = JSON.parse(chunk) as DecodedChatStream;
+
+      //     setSourceMetadata(parsedValue.metadata, streamIndex);
+      //   } else {
+      //     setMessage(
+      //       {
+      //         type: "apiMessage",
+      //         message:
+      //           (useMessageStore.getState().messages[streamIndex]?.message ??
+      //             "") + chunk,
+      //       },
+      //       streamIndex
+      //     );
+      //   }
+      // }
     } catch (error) {
       console.log("error occured");
       setLoadingState(LoadingStateMap.idle);
