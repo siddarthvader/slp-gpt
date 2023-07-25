@@ -10,7 +10,7 @@ function Header() {
     <div className="flex flex-row items-center justify-between w-full p-3 border-b-[1px] bg-emerald-600">
       <div className="flex items-center justify-center w-full text-2xl font-semibold text-center text-secondary">
         <Image alt="logo" src="/logo-min.png" width={"60"} height="40" />
-        StartUp LeaderShip Program
+        SLP GPT
       </div>
     </div>
   );
